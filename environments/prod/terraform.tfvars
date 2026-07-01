@@ -1,0 +1,9 @@
+aws_region            = "us-east-1"
+environment           = "prod"
+project_name          = "paymentology-prod"
+availability_zones    = ["us-east-1a", "us-east-1b", "us-east-1c"]
+vpc_cidr              = "10.30.0.0/16"
+public_subnet_cidrs   = ["10.30.1.0/24", "10.30.2.0/24", "10.30.3.0/24"]
+private_subnet_cidrs  = ["10.30.11.0/24", "10.30.12.0/24", "10.30.13.0/24"]
+database_subnet_cidrs = ["10.30.21.0/24", "10.30.22.0/24", "10.30.23.0/24"]
+create_database_subnets = true

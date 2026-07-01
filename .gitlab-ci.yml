@@ -1,0 +1,64 @@
+stages:
+  - validate
+  - plan
+  - apply
+
+variables:
+  TF_ROOT: $CI_PROJECT_DIR
+  TF_VERSION: "1.5.7"
+
+.before_script_template: &before_script_template
+  - apk add --no-cache unzip curl
+  - curl -sSLo terraform.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+  - unzip -o terraform.zip -d /usr/local/bin/
+  - terraform version
+
+validate:
+  stage: validate
+  script:
+    - *before_script_template
+    - terraform -chdir=$TF_ROOT init -backend=false
+    - terraform -chdir=$TF_ROOT fmt -check -diff
+    - terraform -chdir=$TF_ROOT validate
+
+plan:dev:
+  stage: plan
+  script:
+    - *before_script_template
+    - terraform -chdir=$TF_ROOT init
+    - terraform -chdir=$TF_ROOT workspace select dev || terraform -chdir=$TF_ROOT workspace new dev
+    - terraform -chdir=$TF_ROOT plan -var-file=environments/dev/terraform.tfvars -out=tfplan
+  only:
+    - dev
+
+apply:dev:
+  stage: apply
+  script:
+    - *before_script_template
+    - terraform -chdir=$TF_ROOT init
+    - terraform -chdir=$TF_ROOT workspace select dev
+    - terraform -chdir=$TF_ROOT apply -auto-approve tfplan
+  only:
+    - dev
+  when: manual
+
+plan:prod:
+  stage: plan
+  script:
+    - *before_script_template
+    - terraform -chdir=$TF_ROOT init
+    - terraform -chdir=$TF_ROOT workspace select prod || terraform -chdir=$TF_ROOT workspace new prod
+    - terraform -chdir=$TF_ROOT plan -var-file=environments/prod/terraform.tfvars -out=tfplan
+  only:
+    - main
+
+apply:prod:
+  stage: apply
+  script:
+    - *before_script_template
+    - terraform -chdir=$TF_ROOT init
+    - terraform -chdir=$TF_ROOT workspace select prod
+    - terraform -chdir=$TF_ROOT apply -auto-approve tfplan
+  only:
+    - main
+  when: manual
