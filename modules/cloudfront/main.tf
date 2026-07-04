@@ -1,4 +1,5 @@
-resource "aws_cloudfront_distribution" "this" {
+# Create the Paymentology CloudFront distribution
+resource "aws_cloudfront_distribution" "pamentology_distribution" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = ""

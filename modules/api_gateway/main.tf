@@ -1,4 +1,5 @@
-resource "aws_api_gateway_rest_api" "this" {
+# Create the Paymentology API Gateway REST API
+resource "aws_api_gateway_rest_api" "pamentology_api" {
   name = "${var.project_name}-api"
 
   endpoint_configuration {
@@ -7,21 +8,21 @@ resource "aws_api_gateway_rest_api" "this" {
 }
 
 resource "aws_api_gateway_resource" "proxy" {
-  rest_api_id = aws_api_gateway_rest_api.this.id
-  parent_id   = aws_api_gateway_rest_api.this.root_resource_id
+  rest_api_id = aws_api_gateway_rest_api.pamentology_api.id
+  parent_id   = aws_api_gateway_rest_api.pamentology_api.root_resource_id
   path_part   = "{proxy+}"
 }
 
 resource "aws_api_gateway_method" "root_any" {
-  rest_api_id   = aws_api_gateway_rest_api.this.id
-  resource_id   = aws_api_gateway_rest_api.this.root_resource_id
+  rest_api_id   = aws_api_gateway_rest_api.pamentology_api.id
+  resource_id   = aws_api_gateway_rest_api.pamentology_api.root_resource_id
   http_method   = "ANY"
   authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "root_any" {
-  rest_api_id             = aws_api_gateway_rest_api.this.id
-  resource_id             = aws_api_gateway_rest_api.this.root_resource_id
+  rest_api_id             = aws_api_gateway_rest_api.pamentology_api.id
+  resource_id             = aws_api_gateway_rest_api.pamentology_api.root_resource_id
   http_method             = aws_api_gateway_method.root_any.http_method
   integration_http_method = "ANY"
   type                    = "HTTP"
@@ -31,7 +32,7 @@ resource "aws_api_gateway_integration" "root_any" {
 }
 
 resource "aws_api_gateway_method" "proxy_any" {
-  rest_api_id   = aws_api_gateway_rest_api.this.id
+  rest_api_id   = aws_api_gateway_rest_api.pamentology_api.id
   resource_id   = aws_api_gateway_resource.proxy.id
   http_method   = "ANY"
   authorization = "NONE"
@@ -42,7 +43,7 @@ resource "aws_api_gateway_method" "proxy_any" {
 }
 
 resource "aws_api_gateway_integration" "proxy_any" {
-  rest_api_id             = aws_api_gateway_rest_api.this.id
+  rest_api_id             = aws_api_gateway_rest_api.pamentology_api.id
   resource_id             = aws_api_gateway_resource.proxy.id
   http_method             = aws_api_gateway_method.proxy_any.http_method
   integration_http_method = "ANY"
@@ -56,8 +57,9 @@ resource "aws_api_gateway_integration" "proxy_any" {
   }
 }
 
-resource "aws_api_gateway_deployment" "this" {
-  rest_api_id = aws_api_gateway_rest_api.this.id
+# Deploy the Paymentology API Gateway configuration
+resource "aws_api_gateway_deployment" "pamentology_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.pamentology_api.id
 
   triggers = {
     redeployment = sha1(join("|", [
@@ -75,8 +77,9 @@ resource "aws_api_gateway_deployment" "this" {
   ]
 }
 
-resource "aws_api_gateway_stage" "this" {
-  rest_api_id   = aws_api_gateway_rest_api.this.id
-  deployment_id = aws_api_gateway_deployment.this.id
+# Create the API Gateway stage for the deployment
+resource "aws_api_gateway_stage" "pamentology_stage" {
+  rest_api_id   = aws_api_gateway_rest_api.pamentology_api.id
+  deployment_id = aws_api_gateway_deployment.pamentology_deployment.id
   stage_name    = var.stage_name
 }
