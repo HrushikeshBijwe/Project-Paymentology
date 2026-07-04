@@ -14,7 +14,8 @@ resource "aws_launch_template" "web" {
   instance_type = var.instance_type
 
   user_data = base64encode(templatefile("${path.module}/templates/user_data.sh", {
-    app_name = var.project_name
+    app_name     = var.project_name
+    environment  = var.environment
   }))
 
   iam_instance_profile {

@@ -64,6 +64,7 @@ module "compute" {
   web_security_group_id = module.security.web_security_group_id
   target_group_arn      = module.loadbalancer.target_group_arn
   instance_profile_name = module.iam.instance_profile_name
+  environment           = var.environment
   tags                  = local.common_tags
 }
 

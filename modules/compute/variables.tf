@@ -47,6 +47,12 @@ variable "instance_profile_name" {
   type        = string
 }
 
+variable "environment" {
+  description = "Deployment environment for instance user data"
+  type        = string
+  default     = "dev"
+}
+
 variable "tags" {
   description = "Common tags"
   type        = map(string)

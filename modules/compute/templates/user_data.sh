@@ -7,7 +7,7 @@ cat > /var/www/html/index.html <<'EOF'
 <!doctype html>
 <html>
   <head><title>${app_name} Web App</title></head>
-  <body><h1>Welcome Sarang to Paymentology</h1><p>Terraform-managed web tier</p></body>
+  <body><h1>Welcome Sarang to Paymentology</h1><p>Terraform-managed web tier in ${environment} environment</p></body>
 </html>
 EOF
 cat > /opt/aws/amazon-cloudwatch-agent/bin/config.json <<'EOF'
