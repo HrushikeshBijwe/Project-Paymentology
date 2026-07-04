@@ -3,7 +3,7 @@ locals {
 }
 
 # Create the Paymentology VPC
-resource "aws_vpc" "pamentology_vpc" {
+resource "aws_vpc" "paymentology_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -17,8 +17,8 @@ resource "aws_vpc" "pamentology_vpc" {
 }
 
 # Create the internet gateway for the VPC
-resource "aws_internet_gateway" "pamentology_igw" {
-  vpc_id = aws_vpc.pamentology_vpc.id
+resource "aws_internet_gateway" "paymentology_igw" {
+  vpc_id = aws_vpc.paymentology_vpc.id
 
   tags = merge(
     var.tags,
@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "pamentology_igw" {
 
 resource "aws_subnet" "public" {
   count                   = length(local.azs)
-  vpc_id                  = aws_vpc.pamentology_vpc.id
+  vpc_id                  = aws_vpc.paymentology_vpc.id
   cidr_block              = var.public_subnet_cidrs[count.index]
   availability_zone       = local.azs[count.index]
   map_public_ip_on_launch = true
@@ -46,7 +46,7 @@ resource "aws_subnet" "public" {
 
 resource "aws_subnet" "private" {
   count             = length(local.azs)
-  vpc_id            = aws_vpc.pamentology_vpc.id
+  vpc_id            = aws_vpc.paymentology_vpc.id
   cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = local.azs[count.index]
 
@@ -61,7 +61,7 @@ resource "aws_subnet" "private" {
 
 resource "aws_subnet" "database" {
   count             = var.create_database_subnets ? length(local.azs) : 0
-  vpc_id            = aws_vpc.pamentology_vpc.id
+  vpc_id            = aws_vpc.paymentology_vpc.id
   cidr_block        = var.database_subnet_cidrs[count.index]
   availability_zone = local.azs[count.index]
 
@@ -75,40 +75,40 @@ resource "aws_subnet" "database" {
 }
 
 resource "aws_eip" "nat" {
-  count  = length(local.azs)
   domain = "vpc"
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-nat-eip-${count.index + 1}"
+      Name = "${var.project_name}-nat-eip"
     }
   )
 }
 
+
 # Create NAT gateways for the private subnets
-resource "aws_nat_gateway" "pamentology_nat" {
-  count         = length(local.azs)
-  allocation_id = aws_eip.nat[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
+resource "aws_nat_gateway" "paymentology_nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-nat-${count.index + 1}"
+      Name = "${var.project_name}-nat"
     }
   )
 
-  depends_on = [aws_internet_gateway.pamentology_igw]
+  depends_on = [aws_internet_gateway.paymentology_igw]
 }
+
 
 # Create the public route table
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.pamentology_vpc.id
+  vpc_id = aws_vpc.paymentology_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.pamentology_igw.id
+    gateway_id = aws_internet_gateway.paymentology_igw.id
   }
 
   tags = merge(
@@ -127,11 +127,11 @@ resource "aws_route_table_association" "public" {
 
 resource "aws_route_table" "private" {
   count  = length(local.azs)
-  vpc_id = aws_vpc.pamentology_vpc.id
+  vpc_id = aws_vpc.paymentology_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.pamentology_nat[count.index].id
+    nat_gateway_id = aws_nat_gateway.paymentology_nat.id
   }
 
   tags = merge(
@@ -150,7 +150,7 @@ resource "aws_route_table_association" "private" {
 
 resource "aws_route_table" "database" {
   count  = var.create_database_subnets ? length(local.azs) : 0
-  vpc_id = aws_vpc.pamentology_vpc.id
+  vpc_id = aws_vpc.paymentology_vpc.id
 
   tags = merge(
     var.tags,
@@ -165,3 +165,6 @@ resource "aws_route_table_association" "database" {
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.database[count.index].id
 }
+
+
+

@@ -1,5 +1,5 @@
 # Create the Paymentology application load balancer
-resource "aws_lb" "pamentology_alb" {
+resource "aws_lb" "paymentology_alb" {
   name               = "${var.project_name}-alb"
   internal           = false
   load_balancer_type = "application"
@@ -27,7 +27,7 @@ resource "aws_lb_target_group" "web" {
 
 # Create the HTTP listener for the load balancer
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.pamentology_alb.arn
+  load_balancer_arn = aws_lb.paymentology_alb.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -36,3 +36,4 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.web.arn
   }
 }
+
