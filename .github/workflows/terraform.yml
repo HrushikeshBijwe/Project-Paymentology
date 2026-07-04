@@ -89,11 +89,10 @@ jobs:
 
       - name: Terraform plan
         run: |
+          terraform workspace select -or-create "$TF_ENVIRONMENT"
           if [ "$TF_ENVIRONMENT" = "dev" ]; then
-            terraform workspace select dev || terraform workspace new dev
             terraform plan -var-file=environments/dev/terraform.tfvars -out=tfplan
           else
-            terraform workspace select prod || terraform workspace new prod
             terraform plan -var-file=environments/prod/terraform.tfvars -out=tfplan
           fi
 
@@ -135,5 +134,5 @@ jobs:
         run: |
           TF_ENVIRONMENT=${{ github.event.inputs.environment }}
 
-          terraform workspace select "$TF_ENVIRONMENT" || terraform workspace new "$TF_ENVIRONMENT"
+          terraform workspace select -or-create "$TF_ENVIRONMENT"
           terraform apply -auto-approve tfplan
