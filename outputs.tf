@@ -8,10 +8,10 @@ output "api_gateway_url" {
   value       = module.api_gateway.invoke_url
 }
 
-output "cloudfront_domain_name" {
-  description = "CloudFront distribution domain name"
-  value       = module.cloudfront.domain_name
-}
+# output "cloudfront_domain_name" {
+#   description = "CloudFront distribution domain name"
+#   value       = module.cloudfront.domain_name
+# }
 
 output "vpc_id" {
   description = "VPC ID"
