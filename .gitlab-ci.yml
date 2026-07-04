@@ -1,4 +1,5 @@
 stages:
+  - init
   - validate
   - plan
   - apply
@@ -6,12 +7,23 @@ stages:
 variables:
   TF_ROOT: $CI_PROJECT_DIR
   TF_VERSION: "1.5.7"
+  AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+  AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+  AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
 
 .before_script_template: &before_script_template
   - apk add --no-cache unzip curl
   - curl -sSLo terraform.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
   - unzip -o terraform.zip -d /usr/local/bin/
   - terraform version
+
+terraform_init:
+  stage: init
+  script:
+    - *before_script_template
+    - terraform -chdir=$TF_ROOT init -backend=false
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
 
 validate:
   stage: validate
@@ -20,45 +32,59 @@ validate:
     - terraform -chdir=$TF_ROOT init -backend=false
     - terraform -chdir=$TF_ROOT fmt -check -diff
     - terraform -chdir=$TF_ROOT validate
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
 
-plan:dev:
+plan_dev:
   stage: plan
   script:
     - *before_script_template
     - terraform -chdir=$TF_ROOT init
     - terraform -chdir=$TF_ROOT workspace select dev || terraform -chdir=$TF_ROOT workspace new dev
     - terraform -chdir=$TF_ROOT plan -var-file=environments/dev/terraform.tfvars -out=tfplan
-  only:
-    - dev
+  artifacts:
+    paths:
+      - tfplan
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
 
-apply:dev:
+apply_dev:
   stage: apply
   script:
     - *before_script_template
     - terraform -chdir=$TF_ROOT init
     - terraform -chdir=$TF_ROOT workspace select dev
     - terraform -chdir=$TF_ROOT apply -auto-approve tfplan
-  only:
-    - dev
-  when: manual
+  dependencies:
+    - plan_dev
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: manual
 
-plan:prod:
+plan_prod:
   stage: plan
   script:
     - *before_script_template
     - terraform -chdir=$TF_ROOT init
     - terraform -chdir=$TF_ROOT workspace select prod || terraform -chdir=$TF_ROOT workspace new prod
     - terraform -chdir=$TF_ROOT plan -var-file=environments/prod/terraform.tfvars -out=tfplan
-  only:
-    - main
+  artifacts:
+    paths:
+      - tfplan
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
 
-apply:prod:
+apply_prod:
   stage: apply
   script:
     - *before_script_template
     - terraform -chdir=$TF_ROOT init
     - terraform -chdir=$TF_ROOT workspace select prod
     - terraform -chdir=$TF_ROOT apply -auto-approve tfplan
-  only:
-    - main
-  when: manual
+  dependencies:
+    - plan_prod
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
