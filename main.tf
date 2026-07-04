@@ -39,13 +39,13 @@ module "waf" {
   tags         = local.common_tags
 }
 
-module "cloudfront" {
-  source             = "./modules/cloudfront"
-  project_name       = var.project_name
-  origin_domain_name = module.loadbalancer.alb_dns_name
-  web_acl_arn        = module.waf.cloudfront_web_acl_arn
-  tags               = local.common_tags
-}
+# module "cloudfront" {
+#   source             = "./modules/cloudfront"
+#   project_name       = var.project_name
+#   origin_domain_name = module.loadbalancer.alb_dns_name
+#   web_acl_arn        = module.waf.cloudfront_web_acl_arn
+#   tags               = local.common_tags
+# }
 
 module "api_gateway" {
   source       = "./modules/api_gateway"
