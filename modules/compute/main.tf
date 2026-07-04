@@ -17,22 +17,27 @@ resource "aws_launch_template" "web" {
     app_name = var.project_name
   }))
 
+  iam_instance_profile {
+    name = var.instance_profile_name
+  }
+
   vpc_security_group_ids = [var.web_security_group_id]
 
   tag_specifications {
     resource_type = "instance"
-    tags = merge(var.tags, { Name = "${var.project_name}-web" })
+    tags          = merge(var.tags, { Name = "${var.project_name}-web" })
   }
 }
 
 resource "aws_autoscaling_group" "web" {
-  name                = "${var.project_name}-asg"
-  desired_capacity    = var.desired_capacity
-  max_size            = var.max_size
-  min_size            = var.min_size
-  vpc_zone_identifier = var.private_subnet_ids
-  target_group_arns   = [var.target_group_arn]
-  health_check_type   = "ELB"
+  name                     = "${var.project_name}-asg"
+  desired_capacity         = var.desired_capacity
+  max_size                 = var.max_size
+  min_size                 = var.min_size
+  vpc_zone_identifier      = var.private_subnet_ids
+  target_group_arns        = [var.target_group_arn]
+  health_check_type        = "ELB"
+  health_check_grace_period = 120
 
   launch_template {
     id      = aws_launch_template.web.id

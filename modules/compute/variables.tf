@@ -42,6 +42,11 @@ variable "target_group_arn" {
   type        = string
 }
 
+variable "instance_profile_name" {
+  description = "IAM instance profile name for EC2 instances"
+  type        = string
+}
+
 variable "tags" {
   description = "Common tags"
   type        = map(string)
