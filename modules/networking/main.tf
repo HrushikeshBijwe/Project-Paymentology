@@ -1,5 +1,10 @@
 locals {
   azs = slice(var.availability_zones, 0, var.az_count)
+  az_index_map = { for idx, az in slice(var.availability_zones, 0, var.az_count) : az => idx }
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
 }
 
 # Create the Paymentology VPC
@@ -75,12 +80,13 @@ resource "aws_subnet" "database" {
 }
 
 resource "aws_eip" "nat" {
+  count  = length(local.azs)
   domain = "vpc"
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-nat-eip"
+      Name = "${var.project_name}-nat-eip-${count.index + 1}"
     }
   )
 }
@@ -88,9 +94,16 @@ resource "aws_eip" "nat" {
 
 # Create NAT gateways for the private subnets
 resource "aws_nat_gateway" "paymentology_nat" {
-  allocation_id     = aws_eip.nat.id
-  subnet_id         = aws_subnet.public[0].id
+  vpc_id            = aws_vpc.paymentology_vpc.id
   availability_mode = "regional"
+
+  dynamic "availability_zone_address" {
+    for_each = local.azs
+    content {
+      allocation_ids    = [aws_eip.nat[local.az_index_map[availability_zone_address.value]].id]
+      availability_zone = availability_zone_address.value
+    }
+  }
 
   tags = merge(
     var.tags,
