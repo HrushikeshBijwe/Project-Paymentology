@@ -65,6 +65,18 @@ variable "ssh_public_key" {
   default     = ""
 }
 
+variable "tls_certificate_pem" {
+  description = "PEM-encoded certificate body to install on instances (for HTTPS)"
+  type        = string
+  default     = ""
+}
+
+variable "tls_private_key_pem" {
+  description = "PEM-encoded private key to install on instances (for HTTPS)"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Common tags"
   type        = map(string)
