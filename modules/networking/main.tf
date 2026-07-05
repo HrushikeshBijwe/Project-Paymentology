@@ -1,6 +1,7 @@
 locals {
   azs = slice(var.availability_zones, 0, var.az_count)
   az_index_map = { for idx, az in slice(var.availability_zones, 0, var.az_count) : az => idx }
+  az_indices = range(length(slice(var.availability_zones, 0, var.az_count)))
 }
 
 data "aws_availability_zones" "available" {
@@ -98,10 +99,10 @@ resource "aws_nat_gateway" "paymentology_nat" {
   availability_mode = "regional"
 
   dynamic "availability_zone_address" {
-    for_each = local.azs
+    for_each = local.az_indices
     content {
-      allocation_ids    = [aws_eip.nat[local.az_index_map[availability_zone_address.value]].id]
-      availability_zone = availability_zone_address.value
+      allocation_ids    = [aws_eip.nat[availability_zone_address.value].id]
+      availability_zone = data.aws_availability_zones.available.names[availability_zone_address.value]
     }
   }
 
