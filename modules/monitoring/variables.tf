@@ -28,3 +28,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "alert_email" {
+  description = "Email address to receive alerts (SNS subscription). A confirmation email will be sent.)"
+  type        = string
+  default     = "sarang.kolhe79@gmail.com"
+}

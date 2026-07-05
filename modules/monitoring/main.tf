@@ -9,6 +9,13 @@ resource "aws_sns_topic" "alerts" {
   name = "${var.project_name}-alerts"
 }
 
+# Email subscription for alerts - recipient must confirm the subscription via email
+resource "aws_sns_topic_subscription" "alerts_email" {
+  topic_arn = aws_sns_topic.alerts.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
+}
+
 resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   alarm_name          = "${var.project_name}-HighCPU"
   comparison_operator = "GreaterThanThreshold"
