@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_log_group" "web" {
-  name              = "/aws/ecs/${var.project_name}-web"
+  name              = "/aws/asg/${var.project_name}-web"
   retention_in_days = 30
 
   tags = merge(var.tags, { Name = "${var.project_name}-web-logs" })
