@@ -137,7 +137,7 @@ resource "aws_iam_role_policy" "vpc_flow_logs_policy" {
 }
 
 resource "aws_flow_log" "vpc_flow" {
-  resource_id          = module.networking.vpc_id
+  vpc_id               = module.networking.vpc_id
   traffic_type         = "ALL"
   log_destination_type = "cloud-watch-logs"
   log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn

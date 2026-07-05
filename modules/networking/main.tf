@@ -90,7 +90,6 @@ resource "aws_eip" "nat" {
 resource "aws_nat_gateway" "paymentology_nat" {
   allocation_id     = aws_eip.nat.id
   subnet_id         = aws_subnet.public[0].id
-  availability_mode = "regional"
 
   tags = merge(
     var.tags,
