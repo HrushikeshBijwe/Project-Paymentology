@@ -130,6 +130,9 @@ jobs:
       - name: Terraform init
         run: terraform init -upgrade -reconfigure -input=false
 
+      - name: Select workspace
+        run: terraform workspace select -or-create "$TF_ENVIRONMENT"
+
       - name: Terraform plan
         run: |
           if [ "$TF_ENVIRONMENT" = "dev" ]; then
