@@ -68,7 +68,7 @@ jobs:
         shell: bash
 
       - name: Terraform init
-        run: terraform init -upgrade -backend=false
+        run: terraform init -upgrade -backend=false -input=false
 
   validate:
     name: Terraform validate
@@ -91,7 +91,7 @@ jobs:
         run: terraform fmt -check -diff
 
       - name: Terraform init
-        run: terraform init -upgrade -backend=false
+        run: terraform init -upgrade -backend=false -input=false
 
       - name: Terraform validate
         run: terraform validate
@@ -128,7 +128,7 @@ jobs:
           fi
 
       - name: Terraform init
-        run: terraform init -upgrade -backend=false
+        run: terraform init -upgrade -backend=false -input=false
 
       - name: Terraform plan
         run: |
@@ -186,7 +186,7 @@ jobs:
           echo "TF_ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
       - name: Terraform init
-        run: terraform init -upgrade -reconfigure
+        run: terraform init -upgrade -reconfigure -input=false
 
       - name: Terraform apply
         run: |
@@ -216,7 +216,7 @@ jobs:
           echo "TF_ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
       - name: Terraform init
-        run: terraform init -upgrade -reconfigure
+        run: terraform init -upgrade -reconfigure -input=false
 
       - name: Terraform destroy
         run: |
