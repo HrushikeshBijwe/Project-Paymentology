@@ -17,8 +17,8 @@ resource "aws_launch_template" "web" {
   user_data = base64encode(templatefile("${path.module}/templates/user_data.sh", {
     app_name    = var.project_name
     environment = var.environment
-    tls_certificate_pem = var.tls_certificate_pem
-    tls_private_key_pem = var.tls_private_key_pem
+    # tls_certificate_pem = var.tls_certificate_pem
+    # tls_private_key_pem = var.tls_private_key_pem
   }))
 
   iam_instance_profile {

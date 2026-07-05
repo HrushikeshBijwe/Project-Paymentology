@@ -30,20 +30,20 @@ variable "tls_certificate_arn" {
   default     = ""
 }
 
-variable "tls_certificate_pem" {
-  description = "PEM-encoded certificate body to import into ACM (self-signed allowed)."
-  type        = string
-  default     = ""
-}
+# variable "tls_certificate_pem" {
+#   description = "PEM-encoded certificate body to import into ACM (self-signed allowed)."
+#   type        = string
+#   default     = ""
+# }
 
-variable "tls_private_key_pem" {
-  description = "PEM-encoded private key corresponding to the certificate."
-  type        = string
-  default     = ""
-}
+# variable "tls_private_key_pem" {
+#   description = "PEM-encoded private key corresponding to the certificate."
+#   type        = string
+#   default     = ""
+# }
 
-variable "tls_certificate_chain_pem" {
-  description = "Optional PEM-encoded certificate chain."
-  type        = string
-  default     = ""
-}
+# variable "tls_certificate_chain_pem" {
+#   description = "Optional PEM-encoded certificate chain."
+#   type        = string
+#   default     = ""
+# }

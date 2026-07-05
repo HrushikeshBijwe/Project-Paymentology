@@ -15,11 +15,7 @@ on:
         options:
           - dev
           - prod
-      generate_cert:
-        description: 'Generate a self-signed TLS cert and import into ACM for this run'
-        required: false
-        default: false
-        type: boolean
+      
       action:
         description: 'Terraform action'
         required: true

@@ -70,14 +70,14 @@ variable "ssh_public_key" {
   default     = ""
 }
 
-variable "tls_certificate_pem" {
-  description = "PEM-encoded certificate body for instances (optional)"
-  type        = string
-  default     = ""
-}
+# variable "tls_certificate_pem" {
+#   description = "PEM-encoded certificate body for instances (optional)"
+#   type        = string
+#   default     = ""
+# }
 
-variable "tls_private_key_pem" {
-  description = "PEM-encoded private key for instances (optional)"
-  type        = string
-  default     = ""
-}
+# variable "tls_private_key_pem" {
+#   description = "PEM-encoded private key for instances (optional)"
+#   type        = string
+#   default     = ""
+# }
