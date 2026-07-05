@@ -132,7 +132,7 @@ jobs:
 
       - name: Terraform plan
         run: |
-          terraform workspace select -or-create "$TF_ENVIRONMENT"
+          export TF_WORKSPACE="$TF_ENVIRONMENT"
           if [ "$TF_ENVIRONMENT" = "dev" ]; then
             terraform plan -var-file=environments/dev/terraform.tfvars -out=tfplan
           else
