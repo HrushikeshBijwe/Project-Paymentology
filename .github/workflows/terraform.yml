@@ -15,6 +15,11 @@ on:
         options:
           - dev
           - prod
+      generate_cert:
+        description: 'Generate a self-signed TLS cert and import into ACM for this run'
+        required: false
+        default: false
+        type: boolean
       action:
         description: 'Terraform action'
         required: true
@@ -54,6 +59,13 @@ jobs:
           else
             echo "TF_ENVIRONMENT=dev" >> $GITHUB_ENV
           fi
+
+      - name: Optionally generate self-signed cert
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.generate_cert == 'true' }}
+        run: |
+          chmod +x ./scripts/generate_self_signed_cert.sh
+          ./scripts/generate_self_signed_cert.sh "$TF_ENVIRONMENT" ".certs" "environments/${TF_ENVIRONMENT}/terraform.tfvars"
+        shell: bash
 
       - name: Terraform init
         run: terraform init -upgrade -backend=false

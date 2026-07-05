@@ -57,3 +57,15 @@ variable "create_database_subnets" {
   type        = bool
   default     = false
 }
+
+variable "ssh_key_name" {
+  description = "SSH key pair name to assign to compute instances"
+  type        = string
+  default     = ""
+}
+
+variable "ssh_public_key" {
+  description = "Optional SSH public key material to create a key pair"
+  type        = string
+  default     = ""
+}
