@@ -30,8 +30,8 @@ module "loadbalancer" {
   public_subnet_ids     = module.networking.public_subnet_ids
   alb_security_group_id = module.security.alb_security_group_id
   tags                  = local.common_tags
-#   tls_certificate_pem   = var.tls_certificate_pem
-#   tls_private_key_pem   = var.tls_private_key_pem
+  #   tls_certificate_pem   = var.tls_certificate_pem
+  #   tls_private_key_pem   = var.tls_private_key_pem
 }
 
 module "waf" {
@@ -71,7 +71,7 @@ module "compute" {
   ssh_public_key        = var.ssh_public_key
   # tls_certificate_pem   = var.tls_certificate_pem
   # tls_private_key_pem   = var.tls_private_key_pem
-  tags                  = local.common_tags
+  tags = local.common_tags
 }
 
 module "monitoring" {
