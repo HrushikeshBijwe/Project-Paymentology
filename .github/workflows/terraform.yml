@@ -128,11 +128,10 @@ jobs:
           fi
 
       - name: Terraform init
-        run: terraform init -upgrade -backend=false -input=false
+        run: terraform init -upgrade -reconfigure -input=false
 
       - name: Terraform plan
         run: |
-          export TF_WORKSPACE="$TF_ENVIRONMENT"
           if [ "$TF_ENVIRONMENT" = "dev" ]; then
             terraform plan -var-file=environments/dev/terraform.tfvars -out=tfplan
           else
