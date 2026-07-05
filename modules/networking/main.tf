@@ -95,21 +95,14 @@ resource "aws_eip" "nat" {
 
 # Create NAT gateways for the private subnets
 resource "aws_nat_gateway" "paymentology_nat" {
-  vpc_id            = aws_vpc.paymentology_vpc.id
-  availability_mode = "regional"
-
-  dynamic "availability_zone_address" {
-    for_each = local.az_indices
-    content {
-      allocation_ids    = [aws_eip.nat[availability_zone_address.value].id]
-      availability_zone = data.aws_availability_zones.available.names[availability_zone_address.value]
-    }
-  }
+  count         = length(local.azs)
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-nat"
+      Name = "${var.project_name}-nat-${count.index + 1}"
     }
   )
 
@@ -146,7 +139,7 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.paymentology_nat.id
+    nat_gateway_id = aws_nat_gateway.paymentology_nat[count.index].id
   }
 
   tags = merge(
