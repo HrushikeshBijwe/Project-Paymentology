@@ -5,6 +5,7 @@ terraform {
     bucket = "sarang-paymentology-bucket"
     key    = "paymentology/terraform.tfstate"
     region = "us-east-1"
+    dynamodb_table = "sarang-paymentology-locks"
   }
 
   required_providers {

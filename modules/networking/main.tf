@@ -33,7 +33,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.paymentology_vpc.id
   cidr_block              = var.public_subnet_cidrs[count.index]
   availability_zone       = local.azs[count.index]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = merge(
     var.tags,
@@ -90,6 +90,7 @@ resource "aws_eip" "nat" {
 resource "aws_nat_gateway" "paymentology_nat" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[0].id
+  availability_mode = "regional"
 
   tags = merge(
     var.tags,
@@ -165,6 +166,9 @@ resource "aws_route_table_association" "database" {
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.database[count.index].id
 }
+
+# VPC Flow Logs to CloudWatch Logs
+/* VPC Flow Logs moved to root module (so resource_id references module.networking.vpc_id) */
 
 
 
